@@ -23,7 +23,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDTOModel> getAll(int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
-        return userRepository.getAll(pageable);
+
+        try {
+            return userRepository.getAll(pageable);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Override
@@ -39,7 +44,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public HttpStatus updateUser(int id, UserModel userInput) {
         Optional<UserModel> userOptional = userRepository.findById(id);
-        if(userOptional.isPresent()){
+        if (userOptional.isPresent()) {
             UserModel user = userOptional.get();
             user.setUserName(userInput.getUserName());
             user.setPassword(userInput.getPassword());
@@ -48,7 +53,7 @@ public class UserServiceImpl implements UserService {
             return HttpStatus.OK;
         }
         return HttpStatus.NOT_FOUND;
-        
+
     }
 
     @Override
