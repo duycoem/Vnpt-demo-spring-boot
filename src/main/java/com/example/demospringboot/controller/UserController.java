@@ -3,10 +3,13 @@ package com.example.demospringboot.controller;
 import com.example.demospringboot.model.UserDTOModel;
 import com.example.demospringboot.model.UserModel;
 import com.example.demospringboot.service.UserService;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 
@@ -20,56 +23,34 @@ public class UserController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<?> getAllUser(@RequestParam(required = false, defaultValue = "1") int pageNumber,
-                                        @RequestParam(required = false, defaultValue = "10") int pageSize) {
+    public List<UserDTOModel> getAllUser(@RequestParam(required = false, defaultValue = "1") int pageNumber,
+                                         @RequestParam(required = false, defaultValue = "10") int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
+        List<UserDTOModel> users = userService.getAll(pageable);
+        return users;
 
-        try {
-            List<UserDTOModel> users = userService.getAll(pageNumber, pageSize);
-            return ResponseEntity.ok(users);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error");
-        }
     }
 
     @GetMapping("/user/{id}")
-    public ResponseEntity<?> getUserById(@PathVariable int id) {
-        UserDTOModel user = userService.getById(id);
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found user");
-        }
-        return ResponseEntity.ok(user);
+    public UserModel getUserById(@PathVariable int id) {
+        UserModel user = userService.getById(id);
+        return user;
     }
 
     @PostMapping("/user")
-    public ResponseEntity<?> createUser(@RequestBody UserModel user) {
-        try {
-            userService.createUser(user);
-            return ResponseEntity.ok("Success");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error");
-        }
+    public void createUser(@RequestBody @Valid UserModel user) {
+        userService.createUser(user);
     }
 
     @PutMapping("/user/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable int id, @RequestBody UserModel user) {
-        try {
-            HttpStatus updateStatus = userService.updateUser(id, user);
-            if (updateStatus == HttpStatus.OK) {
-                return ResponseEntity.ok("Success");
-            }
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found user");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error");
-        }
+    public Boolean updateUser(@PathVariable int id, @RequestBody @Valid UserModel user) {
+        Boolean isUpdateSuccess = userService.updateUser(id, user);
+        return isUpdateSuccess;
+
     }
 
     @DeleteMapping("/user/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable int id) {
-        try {
-            userService.deleteUser(id);
-            return ResponseEntity.ok("Success");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found user");
-        }
+    public void deleteUser(@PathVariable int id) {
+        userService.deleteUser(id);
     }
 }

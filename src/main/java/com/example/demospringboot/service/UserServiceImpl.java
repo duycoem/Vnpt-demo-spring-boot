@@ -3,7 +3,6 @@ package com.example.demospringboot.service;
 import com.example.demospringboot.model.UserDTOModel;
 import com.example.demospringboot.model.UserModel;
 import com.example.demospringboot.repository.UserRepository;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -20,20 +19,15 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
     }
 
-    @Override
-    public List<UserDTOModel> getAll(int pageNumber, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
+    public List<UserDTOModel> getAll(Pageable pageable) {
+        return userRepository.getAll(pageable);
 
-        try {
-            return userRepository.getAll(pageable);
-        } catch (Exception e) {
-            return null;
-        }
     }
 
     @Override
-    public UserDTOModel getById(int id) {
-        return userRepository.getById(id);
+    public UserModel getById(int id) {
+        UserModel user = userRepository.findById(id).orElse(null);
+        return user;
     }
 
     @Override
@@ -42,7 +36,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public HttpStatus updateUser(int id, UserModel userInput) {
+    public Boolean updateUser(int id, UserModel userInput) {
         Optional<UserModel> userOptional = userRepository.findById(id);
         if (userOptional.isPresent()) {
             UserModel user = userOptional.get();
@@ -50,9 +44,9 @@ public class UserServiceImpl implements UserService {
             user.setPassword(userInput.getPassword());
             user.setEmail(userInput.getEmail());
             userRepository.save(user);
-            return HttpStatus.OK;
+            return true;
         }
-        return HttpStatus.NOT_FOUND;
+        return false;
 
     }
 
