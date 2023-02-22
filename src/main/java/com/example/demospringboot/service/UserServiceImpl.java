@@ -1,10 +1,9 @@
 package com.example.demospringboot.service;
 
-import com.example.demospringboot.model.UserDTOModel;
+import com.example.demospringboot.dto.UserModelDTO;
 import com.example.demospringboot.model.UserModel;
 import com.example.demospringboot.repository.UserRepository;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,15 +18,14 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
     }
 
-    public List<UserDTOModel> getAll(Pageable pageable) {
+    public List<UserModelDTO> getAll(Pageable pageable) {
         return userRepository.getAll(pageable);
 
     }
 
     @Override
-    public UserModel getById(int id) {
-        UserModel user = userRepository.findById(id).orElse(null);
-        return user;
+    public UserModel getById(Integer id) {
+        return userRepository.findById(id).orElse(null);
     }
 
     @Override
@@ -36,7 +34,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Boolean updateUser(int id, UserModel userInput) {
+    public void updateUser(Integer id, UserModel userInput) {
         Optional<UserModel> userOptional = userRepository.findById(id);
         if (userOptional.isPresent()) {
             UserModel user = userOptional.get();
@@ -44,14 +42,12 @@ public class UserServiceImpl implements UserService {
             user.setPassword(userInput.getPassword());
             user.setEmail(userInput.getEmail());
             userRepository.save(user);
-            return true;
+            
         }
-        return false;
-
     }
 
     @Override
-    public void deleteUser(int id) {
+    public void deleteUser(Integer id) {
         userRepository.deleteById(id);
     }
 }

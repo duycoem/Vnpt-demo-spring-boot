@@ -1,5 +1,4 @@
-package com.example.demospringboot.model;
-
+package com.example.demospringboot.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,8 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDTOModel {
-
+public class UserModelDTO {
     private Integer userId;
 
     private String userName;

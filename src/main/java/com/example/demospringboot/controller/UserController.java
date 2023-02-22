@@ -1,12 +1,10 @@
 package com.example.demospringboot.controller;
 
-import com.example.demospringboot.model.UserDTOModel;
+import com.example.demospringboot.dto.UserModelDTO;
 import com.example.demospringboot.model.UserModel;
 import com.example.demospringboot.service.UserService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -23,18 +21,18 @@ public class UserController {
     }
 
     @GetMapping("/user")
-    public List<UserDTOModel> getAllUser(@RequestParam(required = false, defaultValue = "1") int pageNumber,
-                                         @RequestParam(required = false, defaultValue = "10") int pageSize) {
+    public List<UserModelDTO> getAllUser(@RequestParam(required = false, defaultValue = "1") Integer pageNumber,
+                                         @RequestParam(required = false, defaultValue = "10") Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
-        List<UserDTOModel> users = userService.getAll(pageable);
-        return users;
+        return userService.getAll(pageable);
+
 
     }
 
     @GetMapping("/user/{id}")
-    public UserModel getUserById(@PathVariable int id) {
-        UserModel user = userService.getById(id);
-        return user;
+    public UserModel getUserById(@PathVariable Integer id) {
+        return userService.getById(id);
+
     }
 
     @PostMapping("/user")
@@ -43,14 +41,12 @@ public class UserController {
     }
 
     @PutMapping("/user/{id}")
-    public Boolean updateUser(@PathVariable int id, @RequestBody @Valid UserModel user) {
-        Boolean isUpdateSuccess = userService.updateUser(id, user);
-        return isUpdateSuccess;
-
+    public void updateUser(@PathVariable Integer id, @RequestBody @Valid UserModel user) {
+        userService.updateUser(id, user);
     }
 
     @DeleteMapping("/user/{id}")
-    public void deleteUser(@PathVariable int id) {
+    public void deleteUser(@PathVariable Integer id) {
         userService.deleteUser(id);
     }
 }
